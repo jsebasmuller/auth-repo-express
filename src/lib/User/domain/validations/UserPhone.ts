@@ -8,7 +8,7 @@ export class UserPhone {
 
   private ensureIsValid() {
     let pattern = /^[0-9]+$/;
-    if (pattern.test(this.value)) {
+    if (!pattern.test(this.value)) {
       throw new Error("El teléfono solo debe tener números");
     }
     if (this.value.length > 10) {
