@@ -4,6 +4,19 @@ import { UserRepository } from "../domain/UserRepository";
 import { User } from "../domain/User";
 import { generateToken } from '../../shared/infraestructure/GenerateToken';
 import { ResponseLogin } from '../domain/response/ResponseLogin';
+import { UserId } from '../domain/validations/UserId';
+import { UserPassword } from '../domain/validations/UserPassword';
+import { UserPhone } from '../domain/validations/UserPhone';
+import { UserEmail } from '../domain/validations/UserEmail';
+import { UserName } from '../domain/validations/UserName';
+
+type MySqlUser = {
+  id: number,
+  nombre: string,
+  email: string,
+  telefono: string,
+  password: string  
+};
 
 export class MySqlUserRepository implements UserRepository {
   client: Pool;
@@ -72,5 +85,30 @@ export class MySqlUserRepository implements UserRepository {
       console.error('Error al iniciar sesión:', error);
       return response;
     }
+  }
+
+  async get(id: UserId): Promise<User | null> {
+    try {  
+      const [rows]: [RowDataPacket[], FieldPacket[]] = await this.client.query("SELECT * FROM USUARIOS WHERE ID = ?", [id.value]);
+      if(rows.length === 1){
+        const user = rows[0] as MySqlUser;
+        return this.mapToDomain(user);
+      }else{
+        return null
+      }
+    } catch (error) {
+      console.error('Error al recuperar el usuario:', error);
+      return null;
+    }
+  }
+
+  private mapToDomain(user: MySqlUser): User {
+    return new User(
+      new UserId(user.id),
+      new UserName(user.nombre),
+      new UserEmail(user.email),
+      new UserPhone(user.telefono),
+      new UserPassword(user.password)
+    );
   }
 }

@@ -7,5 +7,6 @@ const UserRouter = Router();
 
 UserRouter.post('/register', controller.create);
 UserRouter.post('/login', controller.login);
+UserRouter.get('/get/:id', controller.get);
 
 export { UserRouter };

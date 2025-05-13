@@ -7,7 +7,7 @@ export class UserId {
     }
 
     private ensureIsValid() {
-        if (this.value > 1) {
+        if (this.value < 1) {
             throw new Error("UserId debe ser mayor a 1");
         }
     }

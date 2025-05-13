@@ -41,4 +41,13 @@ export class UserController {
       next(e);
     }
   }
+
+  async get(req: Request, res: Response, next: NextFunction): Promise<void>{
+    try{
+      const response = await ServiceContainer.user.get.run(Number(req.params.id));
+      res.status(200).json(response?.mapToPrimitives());
+    }catch(e){
+      next(e);
+    }
+  }
 }
