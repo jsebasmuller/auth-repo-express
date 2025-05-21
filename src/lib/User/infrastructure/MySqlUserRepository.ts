@@ -21,12 +21,13 @@ type MySqlUser = {
 export class MySqlUserRepository implements UserRepository {
   client: Pool;
 
-  constructor(host: string, user: string, password: string, database: string){
+  constructor(host: string, user: string, password: string, database: string, port: number){
     this.client = createPool({
       host: host,
       user: user,
       password: password,
       database: database,
+      port: port,
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0
@@ -37,16 +38,16 @@ export class MySqlUserRepository implements UserRepository {
     try {
       let userPrimitive = user.mapToPrimitives();
       // Verificar si el correo electronico ya existe.
-      const [rows]: [RowDataPacket[], FieldPacket[]] = await this.client.query("SELECT COUNT(*) FROM USUARIOS WHERE EMAIL = ?", [userPrimitive.email.toLowerCase()]);
+      const [rows]: [RowDataPacket[], FieldPacket[]] = await this.client.query("select count(*) from usuarios where email = ?", [userPrimitive.email.toLowerCase()]);
       if(rows.length === 1){
-        if(rows[0]["COUNT(*)"] > 0){
+        if(rows[0]["count(*)"] > 0){
           response.error = 'El correo electrónico ya se encuentra registrado.';
           return response;
         }
       }
       const hashPass = await bcrypt.hash(userPrimitive.password, 10);
       await this.client.query(
-        "INSERT INTO USUARIOS (NOMBRE, EMAIL, TELEFONO, PASSWORD) VALUES (?, ?, ?, ?)",
+        "insert into usuarios (nombre, email, telefono, password) values (?, ?, ?, ?)",
         [userPrimitive.username, userPrimitive.email, userPrimitive.phone, hashPass]
       );
       response.message = 'Usuario registrado exitosamente';
@@ -62,7 +63,7 @@ export class MySqlUserRepository implements UserRepository {
     let response = {} as ResponseLogin;
     try {  
       let userPrimitive = user.mapToPrimitives();
-      const [rows]: [RowDataPacket[], FieldPacket[]] = await this.client.query("SELECT * FROM USUARIOS WHERE EMAIL = ?", [userPrimitive.email.toLowerCase()]);
+      const [rows]: [RowDataPacket[], FieldPacket[]] = await this.client.query("select * from usuarios where email = ?", [userPrimitive.email.toLowerCase()]);
       if(rows.length === 1){
         const user = rows[0];
         const passwordDB = user.password;
@@ -89,7 +90,7 @@ export class MySqlUserRepository implements UserRepository {
 
   async get(id: UserId): Promise<User | null> {
     try {  
-      const [rows]: [RowDataPacket[], FieldPacket[]] = await this.client.query("SELECT * FROM USUARIOS WHERE ID = ?", [id.value]);
+      const [rows]: [RowDataPacket[], FieldPacket[]] = await this.client.query("select * from usuarios where id = ?", [id.value]);
       if(rows.length === 1){
         const user = rows[0] as MySqlUser;
         return this.mapToDomain(user);

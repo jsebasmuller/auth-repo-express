@@ -4,7 +4,7 @@
     "description": "Servicio web de registro e inicio de sesión con Node.js y Express",
     "main": "index.js",
     "scripts": {
-        "build": "npx tsc ./src/main.ts --outDir ./dist/ --module commonjs --target es6",
+        "build": "npx tsc --outDir ./dist/ --module commonjs --target es6",
         "start": "cross-env NODE_ENV=production node dist/main.js",
         "dev": "cross-env NODE_ENV=development nodemon src/main.ts",
         "test": "cross-env set NODE_OPTIONS=--experimental-vm-modules NODE_ENV=test && jest --verbose --config jest.config.mjs"

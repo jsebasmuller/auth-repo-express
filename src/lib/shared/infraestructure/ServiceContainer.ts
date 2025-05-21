@@ -4,7 +4,7 @@ import { MySqlUserRepository } from "../../User/infrastructure/MySqlUserReposito
 import { env } from './env';
 import { UserGet } from './../../User/application/UserGet/UserGet';
 
-const UserRepository = new MySqlUserRepository(env.DB_HOST, env.DB_USER, env.DB_PASS, env.DB);
+const UserRepository = new MySqlUserRepository(env.DB_HOST, env.DB_USER, env.DB_PASS, env.DB, Number(env.DB_PORT));
 
 export const ServiceContainer = {
   user:{

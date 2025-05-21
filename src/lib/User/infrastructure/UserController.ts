@@ -11,7 +11,7 @@ export class UserController {
         password: string
       };
       const response = await ServiceContainer.user.create.run(
-        0, username, email, phone, password
+        1, username, email, phone, password
       );
       if(response.error){
         res.status(500).json(response);
